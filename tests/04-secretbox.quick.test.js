@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import nacl from '../src/nacl-fast.js';
+import nacl from 'nacl.ts/fast';
 
 var enc = function(x) { return Buffer.from(x).toString('base64'); };
 var dec = function(x) { return Buffer.from(x, 'base64'); };

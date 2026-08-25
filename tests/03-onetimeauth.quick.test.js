@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import nacl from '../src/nacl-fast.js';
+import nacl from 'nacl.ts/fast';
 import specVectors from './data/onetimeauth.spec.js';
 
 describe('nacl.lowlevel.crypto_onetimeauth specified vectors', function() {

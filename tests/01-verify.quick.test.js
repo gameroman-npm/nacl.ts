@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import nacl from '../src/nacl-fast.js';
+import nacl from 'nacl.ts/fast';
 
 describe('nacl.verify', function() {
   it('equal arrays of length 1 should verify', function() {

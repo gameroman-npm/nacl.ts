@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import nacl from '../src/nacl-fast.js';
+import nacl from 'nacl.ts/fast';
 
 var nonce = new Uint8Array(nacl.secretbox.nonceLength);
 var key = new Uint8Array(nacl.secretbox.keyLength);
