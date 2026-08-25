@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import nacl from "nacl.ts/fast";
+import nacl from "nacl.ts";
 
 import specVectors from "./data/onetimeauth.spec.js";
 
