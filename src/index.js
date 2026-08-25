@@ -1,5 +1,3 @@
-import { randomBytes as _randomBytes } from "node:crypto";
-
 var nacl = {};
 
 // Ported in 2014 by Dmitry Chestnykh and Devi Mandiri.
@@ -13,11 +11,6 @@ var gf = function (init) {
     r = new Float64Array(16);
   if (init) for (i = 0; i < init.length; i++) r[i] = init[i];
   return r;
-};
-
-//  Pluggable, initialized in high-level API below.
-var randombytes = function (/* x, n */) {
-  throw new Error("no PRNG");
 };
 
 var _0 = new Uint8Array(16);
@@ -1696,7 +1689,7 @@ function crypto_scalarmult_base(q, n) {
 }
 
 function crypto_box_keypair(y, x) {
-  randombytes(x, 32);
+  crypto.getRandomValues(x);
   return crypto_scalarmult_base(y, x);
 }
 
@@ -2339,7 +2332,7 @@ function crypto_sign_keypair(pk, sk, seeded) {
   var p = [gf(), gf(), gf(), gf()];
   var i;
 
-  if (!seeded) randombytes(sk, 32);
+  if (!seeded) crypto.getRandomValues(sk.subarray(0, 32));
   crypto_hash(d, sk, 32);
   d[0] &= 248;
   d[31] &= 127;
@@ -2608,7 +2601,7 @@ function cleanup(arr) {
 
 nacl.randomBytes = function (n) {
   var b = new Uint8Array(n);
-  randombytes(b, n);
+  crypto.getRandomValues(b);
   return b;
 };
 
@@ -2791,17 +2784,5 @@ nacl.verify = function (x, y) {
   if (x.length !== y.length) return false;
   return vn(x, 0, y, 0, x.length) === 0 ? true : false;
 };
-
-nacl.setPRNG = function (fn) {
-  randombytes = fn;
-};
-
-(function () {
-  nacl.setPRNG(function (x, n) {
-    var v = _randomBytes(n);
-    for (var i = 0; i < n; i++) x[i] = v[i];
-    cleanup(v);
-  });
-})();
 
 export default nacl;
