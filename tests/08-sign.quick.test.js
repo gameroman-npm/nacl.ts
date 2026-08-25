@@ -5,7 +5,7 @@ import nacl from "nacl.ts";
 
 describe("nacl.sign.keyPair", function () {
   it("should generate valid key pair", function () {
-    var keys = nacl.sign.keyPair();
+    const keys = nacl.sign.keyPair();
     assert.ok(
       keys.secretKey && keys.secretKey.length === nacl.sign.secretKeyLength,
       "has secret key",
@@ -15,7 +15,7 @@ describe("nacl.sign.keyPair", function () {
       "has public key",
     );
     assert.notEqual(keys.secretKey.toBase64(), keys.publicKey.toBase64());
-    var newKeys = nacl.sign.keyPair();
+    const newKeys = nacl.sign.keyPair();
     assert.notEqual(
       newKeys.secretKey.toBase64(),
       keys.secretKey.toBase64(),
@@ -26,8 +26,8 @@ describe("nacl.sign.keyPair", function () {
 
 describe("nacl.sign.keyPair.fromSecretKey", function () {
   it("should derive same key pair from secret key", function () {
-    var k1 = nacl.sign.keyPair();
-    var k2 = nacl.sign.keyPair.fromSecretKey(k1.secretKey);
+    const k1 = nacl.sign.keyPair();
+    const k2 = nacl.sign.keyPair.fromSecretKey(k1.secretKey);
     assert.equal(k2.secretKey.toBase64(), k1.secretKey.toBase64());
     assert.equal(k2.publicKey.toBase64(), k1.publicKey.toBase64());
   });
@@ -35,17 +35,17 @@ describe("nacl.sign.keyPair.fromSecretKey", function () {
 
 describe("nacl.sign.keyPair.fromSeed", function () {
   it("should generate consistent key pairs from seed", function () {
-    var seed = nacl.randomBytes(nacl.sign.seedLength);
-    var k1 = nacl.sign.keyPair.fromSeed(seed);
-    var k2 = nacl.sign.keyPair.fromSeed(seed);
+    const seed = nacl.randomBytes(nacl.sign.seedLength);
+    const k1 = nacl.sign.keyPair.fromSeed(seed);
+    const k2 = nacl.sign.keyPair.fromSeed(seed);
     assert.equal(k1.secretKey.length, nacl.sign.secretKeyLength);
     assert.equal(k1.publicKey.length, nacl.sign.publicKeyLength);
     assert.equal(k2.secretKey.length, nacl.sign.secretKeyLength);
     assert.equal(k2.publicKey.length, nacl.sign.publicKeyLength);
     assert.equal(k2.secretKey.toBase64(), k1.secretKey.toBase64());
     assert.equal(k2.publicKey.toBase64(), k1.publicKey.toBase64());
-    var seed2 = nacl.randomBytes(nacl.sign.seedLength);
-    var k3 = nacl.sign.keyPair.fromSeed(seed2);
+    const seed2 = nacl.randomBytes(nacl.sign.seedLength);
+    const k3 = nacl.sign.keyPair.fromSeed(seed2);
     assert.equal(k3.secretKey.length, nacl.sign.secretKeyLength);
     assert.equal(k3.publicKey.length, nacl.sign.publicKeyLength);
     assert.notEqual(k3.secretKey.toBase64(), k1.secretKey.toBase64());
@@ -58,21 +58,21 @@ describe("nacl.sign.keyPair.fromSeed", function () {
 
 describe("nacl.sign and nacl.sign.open", function () {
   it("should sign and verify messages", function () {
-    var k = nacl.sign.keyPair();
-    var m = new Uint8Array(100);
-    var i;
+    const k = nacl.sign.keyPair();
+    const m = new Uint8Array(100);
+    let i;
     for (i = 0; i < m.length; i++) m[i] = i & 0xff;
-    var sm = nacl.sign(m, k.secretKey);
+    const sm = nacl.sign(m, k.secretKey);
     assert.ok(
       sm.length > m.length,
       "signed message length should be greater than message length",
     );
-    var om = nacl.sign.open(sm, k.publicKey);
+    let om = nacl.sign.open(sm, k.publicKey);
     assert.deepEqual(om, m);
     assert.throws(function () {
       nacl.sign.open(sm, k.publicKey.subarray(1));
     }, Error);
-    var badPublicKey = new Uint8Array(k.publicKey.length);
+    const badPublicKey = new Uint8Array(k.publicKey.length);
     om = nacl.sign.open(sm, badPublicKey);
     assert.equal(
       om,
@@ -91,16 +91,16 @@ describe("nacl.sign and nacl.sign.open", function () {
 
 describe("nacl.sign.detached and nacl.sign.detached.verify", function () {
   it("should create and verify detached signatures", function () {
-    var k = nacl.sign.keyPair();
-    var m = new Uint8Array(100);
-    var i;
+    const k = nacl.sign.keyPair();
+    const m = new Uint8Array(100);
+    let i;
     for (i = 0; i < m.length; i++) m[i] = i & 0xff;
-    var sig = nacl.sign.detached(m, k.secretKey);
+    const sig = nacl.sign.detached(m, k.secretKey);
     assert.ok(
       sig.length === nacl.sign.signatureLength,
       "signature must have correct length",
     );
-    var result = nacl.sign.detached.verify(m, sig, k.publicKey);
+    let result = nacl.sign.detached.verify(m, sig, k.publicKey);
     assert.ok(result, "signature must be verified");
     assert.throws(function () {
       nacl.sign.detached.verify(m, sig, k.publicKey.subarray(1));
@@ -108,7 +108,7 @@ describe("nacl.sign.detached and nacl.sign.detached.verify", function () {
     assert.throws(function () {
       nacl.sign.detached.verify(m, sig.subarray(1), k.publicKey);
     }, Error);
-    var badPublicKey = new Uint8Array(k.publicKey.length);
+    const badPublicKey = new Uint8Array(k.publicKey.length);
     result = nacl.sign.detached.verify(m, sig, badPublicKey);
     assert.equal(
       result,

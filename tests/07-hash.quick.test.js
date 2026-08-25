@@ -32,9 +32,9 @@ describe("nacl.hash exceptions for bad types", function () {
 describe("nacl.hash specified test vectors", function () {
   it("should match spec vectors", function () {
     specVectors.forEach(function (vec) {
-      var goodHash = new Uint8Array(vec[0]);
-      var msg = new Uint8Array(vec[1]);
-      var hash = nacl.hash(msg);
+      const goodHash = new Uint8Array(vec[0]);
+      const msg = new Uint8Array(vec[1]);
+      const hash = nacl.hash(msg);
       assert.equal(hash.toBase64(), goodHash.toBase64());
     });
   });

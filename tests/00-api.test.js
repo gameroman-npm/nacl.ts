@@ -3,11 +3,11 @@ import { describe, it } from "node:test";
 
 import nacl from "nacl.ts";
 
-var nonce = new Uint8Array(nacl.secretbox.nonceLength);
-var key = new Uint8Array(nacl.secretbox.keyLength);
-var msg = new Uint8Array(10);
+const nonce = new Uint8Array(nacl.secretbox.nonceLength);
+const key = new Uint8Array(nacl.secretbox.keyLength);
+const msg = new Uint8Array(10);
 
-var arr = [1, 2, 3];
+const arr = [1, 2, 3];
 
 describe("input type check", function () {
   it("throws TypeError for secretbox with bad types", function () {

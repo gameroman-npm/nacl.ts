@@ -5,14 +5,14 @@ import nacl from "nacl.ts";
 
 describe("nacl.secretbox and nacl.secretbox.open", function () {
   it("should encrypt and decrypt message", function () {
-    var key = new Uint8Array(nacl.secretbox.keyLength);
-    var nonce = new Uint8Array(nacl.secretbox.nonceLength);
-    var i;
+    const key = new Uint8Array(nacl.secretbox.keyLength);
+    const nonce = new Uint8Array(nacl.secretbox.nonceLength);
+    let i;
     for (i = 0; i < key.length; i++) key[i] = i & 0xff;
     for (i = 0; i < nonce.length; i++) nonce[i] = (32 + i) & 0xff;
-    var msg = new TextEncoder().encode("message to encrypt");
-    var box = nacl.secretbox(msg, nonce, key);
-    var openedMsg = nacl.secretbox.open(box, nonce, key);
+    const msg = new TextEncoder().encode("message to encrypt");
+    const box = nacl.secretbox(msg, nonce, key);
+    const openedMsg = nacl.secretbox.open(box, nonce, key);
     assert.equal(
       new TextDecoder().decode(openedMsg),
       new TextDecoder().decode(msg),
@@ -23,8 +23,8 @@ describe("nacl.secretbox and nacl.secretbox.open", function () {
 
 describe("nacl.secretbox.open with invalid box", function () {
   it("should return null", function () {
-    var key = new Uint8Array(nacl.secretbox.keyLength);
-    var nonce = new Uint8Array(nacl.secretbox.nonceLength);
+    const key = new Uint8Array(nacl.secretbox.keyLength);
+    const nonce = new Uint8Array(nacl.secretbox.nonceLength);
     assert.equal(nacl.secretbox.open(new Uint8Array(0), nonce, key), null);
     assert.equal(nacl.secretbox.open(new Uint8Array(10), nonce, key), null);
     assert.equal(nacl.secretbox.open(new Uint8Array(100), nonce, key), null);
@@ -33,11 +33,11 @@ describe("nacl.secretbox.open with invalid box", function () {
 
 describe("nacl.secretbox.open with invalid nonce", function () {
   it("should return null when nonce is wrong", function () {
-    var key = new Uint8Array(nacl.secretbox.keyLength);
-    var nonce = new Uint8Array(nacl.secretbox.nonceLength);
-    for (var i = 0; i < nonce.length; i++) nonce[i] = i & 0xff;
-    var msg = new TextEncoder().encode("message to encrypt");
-    var box = nacl.secretbox(msg, nonce, key);
+    const key = new Uint8Array(nacl.secretbox.keyLength);
+    const nonce = new Uint8Array(nacl.secretbox.nonceLength);
+    for (let i = 0; i < nonce.length; i++) nonce[i] = i & 0xff;
+    const msg = new TextEncoder().encode("message to encrypt");
+    const box = nacl.secretbox(msg, nonce, key);
     assert.equal(
       new TextDecoder().decode(nacl.secretbox.open(box, nonce, key)),
       new TextDecoder().decode(msg),
@@ -49,11 +49,11 @@ describe("nacl.secretbox.open with invalid nonce", function () {
 
 describe("nacl.secretbox.open with invalid key", function () {
   it("should return null when key is wrong", function () {
-    var key = new Uint8Array(nacl.secretbox.keyLength);
-    for (var i = 0; i < key.length; i++) key[i] = i & 0xff;
-    var nonce = new Uint8Array(nacl.secretbox.nonceLength);
-    var msg = new TextEncoder().encode("message to encrypt");
-    var box = nacl.secretbox(msg, nonce, key);
+    const key = new Uint8Array(nacl.secretbox.keyLength);
+    for (let i = 0; i < key.length; i++) key[i] = i & 0xff;
+    const nonce = new Uint8Array(nacl.secretbox.nonceLength);
+    const msg = new TextEncoder().encode("message to encrypt");
+    const box = nacl.secretbox(msg, nonce, key);
     assert.equal(
       new TextDecoder().decode(nacl.secretbox.open(box, nonce, key)),
       new TextDecoder().decode(msg),
@@ -65,16 +65,16 @@ describe("nacl.secretbox.open with invalid key", function () {
 
 describe("nacl.secretbox with message lengths of 0 to 1024", function () {
   it("should handle all message lengths", function () {
-    var key = new Uint8Array(nacl.secretbox.keyLength);
-    var i;
+    const key = new Uint8Array(nacl.secretbox.keyLength);
+    let i;
     for (i = 0; i < key.length; i++) key[i] = i & 0xff;
-    var nonce = new Uint8Array(nacl.secretbox.nonceLength);
-    var fullMsg = new Uint8Array(1024);
+    const nonce = new Uint8Array(nacl.secretbox.nonceLength);
+    const fullMsg = new Uint8Array(1024);
     for (i = 0; i < fullMsg.length; i++) fullMsg[i] = i & 0xff;
     for (i = 0; i < fullMsg.length; i++) {
-      var msg = fullMsg.subarray(0, i);
-      var box = nacl.secretbox(msg, nonce, key);
-      var unbox = nacl.secretbox.open(box, nonce, key);
+      const msg = fullMsg.subarray(0, i);
+      const box = nacl.secretbox(msg, nonce, key);
+      const unbox = nacl.secretbox.open(box, nonce, key);
       assert.equal(msg.toBase64(), unbox.toBase64());
     }
   });

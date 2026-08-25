@@ -8,9 +8,9 @@ import randomVectors from "./data/hash.random.js";
 describe("nacl.hash random test vectors", function () {
   it("should hash correctly", function () {
     randomVectors.forEach(function (vec) {
-      var msg = Uint8Array.fromBase64(vec[0]);
-      var goodHash = Uint8Array.fromBase64(vec[1]);
-      var hash = nacl.hash(msg);
+      const msg = Uint8Array.fromBase64(vec[0]);
+      const goodHash = Uint8Array.fromBase64(vec[1]);
+      const hash = nacl.hash(msg);
       assert.equal(hash.toBase64(), goodHash.toBase64());
     });
   });

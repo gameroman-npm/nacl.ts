@@ -13,23 +13,23 @@ describe("nacl.verify", function () {
   });
 
   it("equal arrays should verify", function () {
-    var a = new Uint8Array(764),
+    const a = new Uint8Array(764),
       b = new Uint8Array(764);
-    for (var i = 0; i < a.length; i++) a[i] = b[i] = i & 0xff;
+    for (let i = 0; i < a.length; i++) a[i] = b[i] = i & 0xff;
     assert.ok(nacl.verify(a, b));
   });
 
   it("same arrays should verify", function () {
-    var a = new Uint8Array(764),
+    const a = new Uint8Array(764),
       b = new Uint8Array(764);
-    for (var i = 0; i < a.length; i++) a[i] = b[i] = i & 0xff;
+    for (let i = 0; i < a.length; i++) a[i] = b[i] = i & 0xff;
     assert.ok(nacl.verify(a, a));
   });
 
   it("different arrays don't verify", function () {
-    var a = new Uint8Array(764),
+    const a = new Uint8Array(764),
       b = new Uint8Array(764);
-    for (var i = 0; i < a.length; i++) a[i] = b[i] = i & 0xff;
+    for (let i = 0; i < a.length; i++) a[i] = b[i] = i & 0xff;
     b[0] = 255;
     assert.ok(!nacl.verify(a, b));
   });
