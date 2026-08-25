@@ -5,10 +5,6 @@ import nacl from "nacl.ts";
 
 import specVectors from "./data/hash.spec.js";
 
-var enc = function (x) {
-  return Buffer.from(x).toString("base64");
-};
-
 describe("nacl.hash length", function () {
   it("should return 64-byte hash for empty input", function () {
     assert.equal(nacl.hash(new Uint8Array(0)).length, 64);
@@ -39,7 +35,7 @@ describe("nacl.hash specified test vectors", function () {
       var goodHash = new Uint8Array(vec[0]);
       var msg = new Uint8Array(vec[1]);
       var hash = nacl.hash(msg);
-      assert.equal(enc(hash), enc(goodHash));
+      assert.equal(hash.toBase64(), goodHash.toBase64());
     });
   });
 });

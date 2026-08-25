@@ -3,10 +3,6 @@ import { describe, it } from "node:test";
 
 import nacl from "nacl.ts";
 
-var enc = function (x) {
-  return Buffer.from(x).toString("base64");
-};
-
 describe("nacl.secretbox and nacl.secretbox.open", function () {
   it("should encrypt and decrypt message", function () {
     var key = new Uint8Array(nacl.secretbox.keyLength);
@@ -79,7 +75,7 @@ describe("nacl.secretbox with message lengths of 0 to 1024", function () {
       var msg = fullMsg.subarray(0, i);
       var box = nacl.secretbox(msg, nonce, key);
       var unbox = nacl.secretbox.open(box, nonce, key);
-      assert.equal(enc(msg), enc(unbox));
+      assert.equal(msg.toBase64(), unbox.toBase64());
     }
   });
 });

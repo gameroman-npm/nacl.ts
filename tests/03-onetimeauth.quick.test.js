@@ -10,10 +10,7 @@ describe("nacl.lowlevel.crypto_onetimeauth specified vectors", function () {
     var out = new Uint8Array(16);
     specVectors.forEach(function (v) {
       nacl.lowlevel.crypto_onetimeauth(out, 0, v.m, 0, v.m.length, v.k);
-      assert.equal(
-        Buffer.from(out).toString("base64"),
-        Buffer.from(v.out).toString("base64"),
-      );
+      assert.equal(out.toBase64(), v.out.toBase64());
     });
   });
 });

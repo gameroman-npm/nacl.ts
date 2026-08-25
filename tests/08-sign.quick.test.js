@@ -3,10 +3,6 @@ import { describe, it } from "node:test";
 
 import nacl from "nacl.ts";
 
-var enc = function (x) {
-  return Buffer.from(x).toString("base64");
-};
-
 describe("nacl.sign.keyPair", function () {
   it("should generate valid key pair", function () {
     var keys = nacl.sign.keyPair();
@@ -18,11 +14,11 @@ describe("nacl.sign.keyPair", function () {
       keys.publicKey && keys.publicKey.length === nacl.sign.publicKeyLength,
       "has public key",
     );
-    assert.notEqual(enc(keys.secretKey), enc(keys.publicKey));
+    assert.notEqual(keys.secretKey.toBase64(), keys.publicKey.toBase64());
     var newKeys = nacl.sign.keyPair();
     assert.notEqual(
-      enc(newKeys.secretKey),
-      enc(keys.secretKey),
+      newKeys.secretKey.toBase64(),
+      keys.secretKey.toBase64(),
       "two keys differ",
     );
   });
@@ -32,8 +28,8 @@ describe("nacl.sign.keyPair.fromSecretKey", function () {
   it("should derive same key pair from secret key", function () {
     var k1 = nacl.sign.keyPair();
     var k2 = nacl.sign.keyPair.fromSecretKey(k1.secretKey);
-    assert.equal(enc(k2.secretKey), enc(k1.secretKey));
-    assert.equal(enc(k2.publicKey), enc(k1.publicKey));
+    assert.equal(k2.secretKey.toBase64(), k1.secretKey.toBase64());
+    assert.equal(k2.publicKey.toBase64(), k1.publicKey.toBase64());
   });
 });
 
@@ -46,14 +42,14 @@ describe("nacl.sign.keyPair.fromSeed", function () {
     assert.equal(k1.publicKey.length, nacl.sign.publicKeyLength);
     assert.equal(k2.secretKey.length, nacl.sign.secretKeyLength);
     assert.equal(k2.publicKey.length, nacl.sign.publicKeyLength);
-    assert.equal(enc(k2.secretKey), enc(k1.secretKey));
-    assert.equal(enc(k2.publicKey), enc(k1.publicKey));
+    assert.equal(k2.secretKey.toBase64(), k1.secretKey.toBase64());
+    assert.equal(k2.publicKey.toBase64(), k1.publicKey.toBase64());
     var seed2 = nacl.randomBytes(nacl.sign.seedLength);
     var k3 = nacl.sign.keyPair.fromSeed(seed2);
     assert.equal(k3.secretKey.length, nacl.sign.secretKeyLength);
     assert.equal(k3.publicKey.length, nacl.sign.publicKeyLength);
-    assert.notEqual(enc(k3.secretKey), enc(k1.secretKey));
-    assert.notEqual(enc(k3.publicKey), enc(k1.publicKey));
+    assert.notEqual(k3.secretKey.toBase64(), k1.secretKey.toBase64());
+    assert.notEqual(k3.publicKey.toBase64(), k1.publicKey.toBase64());
     assert.throws(function () {
       nacl.sign.keyPair.fromSeed(seed2.subarray(0, 16));
     }, Error);

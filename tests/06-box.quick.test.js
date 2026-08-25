@@ -3,10 +3,6 @@ import { describe, it } from "node:test";
 
 import nacl from "nacl.ts";
 
-var enc = function (x) {
-  return Buffer.from(x).toString("base64");
-};
-
 describe("nacl.box.keyPair", function () {
   it("should generate valid key pair", function () {
     var keys = nacl.box.keyPair();
@@ -18,7 +14,7 @@ describe("nacl.box.keyPair", function () {
       keys.publicKey && keys.publicKey.length === nacl.box.publicKeyLength,
       "has public key",
     );
-    assert.notEqual(enc(keys.secretKey), enc(keys.publicKey));
+    assert.notEqual(keys.secretKey.toBase64(), keys.publicKey.toBase64());
   });
 });
 
@@ -26,8 +22,8 @@ describe("nacl.box.keyPair.fromSecretKey", function () {
   it("should derive same key pair from secret key", function () {
     var k1 = nacl.box.keyPair();
     var k2 = nacl.box.keyPair.fromSecretKey(k1.secretKey);
-    assert.equal(enc(k2.secretKey), enc(k1.secretKey));
-    assert.equal(enc(k2.publicKey), enc(k1.publicKey));
+    assert.equal(k2.secretKey.toBase64(), k1.secretKey.toBase64());
+    assert.equal(k2.publicKey.toBase64(), k1.publicKey.toBase64());
   });
 });
 
@@ -60,7 +56,7 @@ describe("nacl.box and nacl.box.open", function () {
       clientKeys.publicKey,
       serverKeys.secretKey,
     );
-    assert.equal(enc(clientBox), enc(serverBox));
+    assert.equal(clientBox.toBase64(), serverBox.toBase64());
     var serverMsg = nacl.box.open(
       serverBox,
       nonce,

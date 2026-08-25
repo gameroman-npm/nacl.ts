@@ -9,7 +9,7 @@ describe("nacl.randomBytes", function () {
       s,
       i;
     for (i = 0; i < 10000; i++) {
-      s = Buffer.from(nacl.randomBytes(32)).toString("base64");
+      s = nacl.randomBytes(32).toBase64();
       if (set[s]) {
         assert.fail("duplicate random sequence! " + s);
         return;
