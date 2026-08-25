@@ -7,11 +7,11 @@ describe("nacl.box.keyPair", function () {
   it("should generate valid key pair", function () {
     const keys = nacl.box.keyPair();
     assert.ok(
-      keys.secretKey && keys.secretKey.length === nacl.box.secretKeyLength,
+      keys.secretKey.length === nacl.box.secretKeyLength,
       "has secret key",
     );
     assert.ok(
-      keys.publicKey && keys.publicKey.length === nacl.box.publicKeyLength,
+      keys.publicKey.length === nacl.box.publicKeyLength,
       "has public key",
     );
     assert.notEqual(keys.secretKey.toBase64(), keys.publicKey.toBase64());

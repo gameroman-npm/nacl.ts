@@ -1,3 +1,3 @@
-import { config } from "@gameroman/config/oxlint/ts";
+import { defineConfig } from "@gameroman/config/oxlint/ts";
 
-export default config;
+export default defineConfig({ rules: { "prefer-const": "warn" } });

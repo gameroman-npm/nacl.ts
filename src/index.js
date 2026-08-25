@@ -7,9 +7,8 @@ const nacl = {};
 // See for details: http://tweetnacl.cr.yp.to/
 
 const gf = function (init) {
-  var i,
-    r = new Float64Array(16);
-  if (init) for (i = 0; i < init.length; i++) r[i] = init[i];
+  const r = new Float64Array(16);
+  if (init) for (let i = 0; i < init.length; i++) r[i] = init[i];
   return r;
 };
 
@@ -646,7 +645,7 @@ const poly1305 = function (key) {
   this.leftover = 0;
   this.fin = 0;
 
-  var t0, t1, t2, t3, t4, t5, t6, t7;
+  let t0, t1, t2, t3, t4, t5, t6, t7;
 
   t0 = (key[0] & 0xff) | ((key[1] & 0xff) << 8);
   this.r[0] = t0 & 0x1fff;
@@ -2593,10 +2592,6 @@ function checkArrayTypes() {
     if (!(arguments[i] instanceof Uint8Array))
       throw new TypeError("unexpected type, use Uint8Array");
   }
-}
-
-function cleanup(arr) {
-  for (let i = 0; i < arr.length; i++) arr[i] = 0;
 }
 
 nacl.randomBytes = function (n) {
