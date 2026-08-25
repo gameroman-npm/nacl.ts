@@ -103,50 +103,28 @@ describe("input type check", function () {
     }, TypeError);
   });
 
-  it("throws TypeError for sign with bad types", function () {
-    assert.throws(function () {
-      nacl.sign(arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.sign(msg, arr);
-    }, TypeError);
+  it("throws TypeError for sign with bad types", async function () {
+    await assert.rejects(nacl.sign(arr, key), TypeError);
+    await assert.rejects(nacl.sign(msg, arr), TypeError);
 
-    assert.throws(function () {
-      nacl.sign.open(arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.sign.open(msg, arr);
-    }, TypeError);
+    await assert.rejects(nacl.sign.open(arr, key), TypeError);
+    await assert.rejects(nacl.sign.open(msg, arr), TypeError);
 
-    assert.throws(function () {
-      nacl.sign.detached(arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.sign.detached(msg, arr);
-    }, TypeError);
+    await assert.rejects(nacl.sign.detached(arr, key), TypeError);
+    await assert.rejects(nacl.sign.detached(msg, arr), TypeError);
 
-    assert.throws(function () {
-      nacl.sign.detached.verify(arr, key, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.sign.detached.verify(msg, arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.sign.detached.verify(msg, key, arr);
-    }, TypeError);
+    await assert.rejects(nacl.sign.detached.verify(arr, key, key), TypeError);
+    await assert.rejects(nacl.sign.detached.verify(msg, arr, key), TypeError);
+    await assert.rejects(nacl.sign.detached.verify(msg, key, arr), TypeError);
 
     assert.throws(function () {
       nacl.sign.keyPair.fromSecretKey(arr);
     }, TypeError);
-    assert.throws(function () {
-      nacl.sign.keyPair.fromSeed(arr);
-    }, TypeError);
+    await assert.rejects(nacl.sign.keyPair.fromSeed(arr), TypeError);
   });
 
-  it("throws TypeError for hash with bad types", function () {
-    assert.throws(function () {
-      nacl.hash(arr);
-    }, TypeError);
+  it("throws TypeError for hash with bad types", async function () {
+    await assert.rejects(nacl.hash(arr), TypeError);
   });
 
   it("throws TypeError for verify with bad types", function () {
