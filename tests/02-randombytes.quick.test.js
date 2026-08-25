@@ -1,14 +1,17 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import nacl from 'nacl.ts/fast';
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 
-describe('nacl.randomBytes', function() {
-  it('no collisions', function() {
-    var set = {}, s, i;
+import nacl from "nacl.ts/fast";
+
+describe("nacl.randomBytes", function () {
+  it("no collisions", function () {
+    var set = {},
+      s,
+      i;
     for (i = 0; i < 10000; i++) {
-      s = Buffer.from(nacl.randomBytes(32)).toString('base64');
+      s = Buffer.from(nacl.randomBytes(32)).toString("base64");
       if (set[s]) {
-        assert.fail('duplicate random sequence! ' + s);
+        assert.fail("duplicate random sequence! " + s);
         return;
       }
       set[s] = true;

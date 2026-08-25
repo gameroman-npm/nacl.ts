@@ -1,18 +1,28 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import nacl from 'nacl.ts/fast';
-import randomVectors from './data/scalarmult.random.js';
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 
-var enc = function(x) { return Buffer.from(x).toString('base64'); };
-var dec = function(x) { return Buffer.from(x, 'base64'); };
+import nacl from "nacl.ts/fast";
 
-describe('nacl.scalarMult.base', function() {
-  it('should compute correct base point multiplication', function() {
-    var golden = new Uint8Array([0x89, 0x16, 0x1f, 0xde, 0x88, 0x7b, 0x2b, 0x53, 0xde, 0x54,
-      0x9a, 0xf4, 0x83, 0x94, 0x01, 0x06, 0xec, 0xc1, 0x14, 0xd6, 0x98, 0x2d,
-      0xaa, 0x98, 0x25, 0x6d, 0xe2, 0x3b, 0xdf, 0x77, 0x66, 0x1a]);
-    var input = new Uint8Array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+import randomVectors from "./data/scalarmult.random.js";
+
+var enc = function (x) {
+  return Buffer.from(x).toString("base64");
+};
+var dec = function (x) {
+  return Buffer.from(x, "base64");
+};
+
+describe("nacl.scalarMult.base", function () {
+  it("should compute correct base point multiplication", function () {
+    var golden = new Uint8Array([
+      0x89, 0x16, 0x1f, 0xde, 0x88, 0x7b, 0x2b, 0x53, 0xde, 0x54, 0x9a, 0xf4,
+      0x83, 0x94, 0x01, 0x06, 0xec, 0xc1, 0x14, 0xd6, 0x98, 0x2d, 0xaa, 0x98,
+      0x25, 0x6d, 0xe2, 0x3b, 0xdf, 0x77, 0x66, 0x1a,
+    ]);
+    var input = new Uint8Array([
+      1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0,
+    ]);
     for (var i = 0; i < 200; i++) {
       input = nacl.scalarMult.base(input);
     }
@@ -20,9 +30,9 @@ describe('nacl.scalarMult.base', function() {
   });
 });
 
-describe('nacl.scalarMult and nacl.scalarMult.base random test vectors', function() {
-  it('should match random test vectors', function() {
-    randomVectors.forEach(function(vec) {
+describe("nacl.scalarMult and nacl.scalarMult.base random test vectors", function () {
+  it("should match random test vectors", function () {
+    randomVectors.forEach(function (vec) {
       var pk1 = dec(vec[0]);
       var sk1 = dec(vec[1]);
       var pk2 = dec(vec[2]);

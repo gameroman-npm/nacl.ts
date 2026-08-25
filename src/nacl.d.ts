@@ -25,8 +25,17 @@ declare interface ScalarMult {
 
 declare namespace BoxProps {
   interface Open {
-    (msg: Uint8Array, nonce: Uint8Array, publicKey: Uint8Array, secretKey: Uint8Array): Uint8Array | null;
-    after(box: Uint8Array, nonce: Uint8Array, key: Uint8Array): Uint8Array | null;
+    (
+      msg: Uint8Array,
+      nonce: Uint8Array,
+      publicKey: Uint8Array,
+      secretKey: Uint8Array,
+    ): Uint8Array | null;
+    after(
+      box: Uint8Array,
+      nonce: Uint8Array,
+      key: Uint8Array,
+    ): Uint8Array | null;
   }
 
   interface KeyPair {
@@ -36,7 +45,12 @@ declare namespace BoxProps {
 }
 
 declare interface Box {
-  (msg: Uint8Array, nonce: Uint8Array, publicKey: Uint8Array, secretKey: Uint8Array): Uint8Array;
+  (
+    msg: Uint8Array,
+    nonce: Uint8Array,
+    publicKey: Uint8Array,
+    secretKey: Uint8Array,
+  ): Uint8Array;
   before(publicKey: Uint8Array, secretKey: Uint8Array): Uint8Array;
   after(msg: Uint8Array, nonce: Uint8Array, key: Uint8Array): Uint8Array;
   open: BoxProps.Open;
@@ -91,4 +105,13 @@ declare interface Nacl {
 declare const nacl: Nacl;
 export default nacl;
 
-export type { BoxKeyPair, SignKeyPair, Secretbox, ScalarMult, Box, Sign, Hash, Nacl };
+export type {
+  BoxKeyPair,
+  SignKeyPair,
+  Secretbox,
+  ScalarMult,
+  Box,
+  Sign,
+  Hash,
+  Nacl,
+};
