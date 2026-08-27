@@ -32,51 +32,25 @@ describe("input type check", function () {
     }, TypeError);
   });
 
-  it("throws TypeError for scalarMult with bad types", function () {
-    assert.throws(function () {
-      nacl.scalarMult(arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.scalarMult(key, arr);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.scalarMult.base(arr);
-    }, TypeError);
+  it("throws TypeError for scalarMult with bad types", async function () {
+    await assert.rejects(nacl.scalarMult(arr, key), TypeError);
+    await assert.rejects(nacl.scalarMult(key, arr), TypeError);
+    await assert.rejects(nacl.scalarMult.base(arr), TypeError);
   });
 
-  it("throws TypeError for box with bad types", function () {
-    assert.throws(function () {
-      nacl.box(arr, nonce, key, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.box(msg, arr, key, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.box(msg, nonce, arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.box(msg, nonce, key, arr);
-    }, TypeError);
+  it("throws TypeError for box with bad types", async function () {
+    await assert.rejects(nacl.box(arr, nonce, key, key), TypeError);
+    await assert.rejects(nacl.box(msg, arr, key, key), TypeError);
+    await assert.rejects(nacl.box(msg, nonce, arr, key), TypeError);
+    await assert.rejects(nacl.box(msg, nonce, key, arr), TypeError);
 
-    assert.throws(function () {
-      nacl.box.open(arr, nonce, key, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.box.open(msg, arr, key, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.box.open(msg, nonce, arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.box.open(msg, nonce, key, arr);
-    }, TypeError);
+    await assert.rejects(nacl.box.open(arr, nonce, key, key), TypeError);
+    await assert.rejects(nacl.box.open(msg, arr, key, key), TypeError);
+    await assert.rejects(nacl.box.open(msg, nonce, arr, key), TypeError);
+    await assert.rejects(nacl.box.open(msg, nonce, key, arr), TypeError);
 
-    assert.throws(function () {
-      nacl.box.before(arr, key);
-    }, TypeError);
-    assert.throws(function () {
-      nacl.box.before(key, arr);
-    }, TypeError);
+    await assert.rejects(nacl.box.before(arr, key), TypeError);
+    await assert.rejects(nacl.box.before(key, arr), TypeError);
 
     assert.throws(function () {
       nacl.box.after(arr, nonce, key);
@@ -98,9 +72,7 @@ describe("input type check", function () {
       nacl.box.open.after(msg, nonce, arr);
     }, TypeError);
 
-    assert.throws(function () {
-      nacl.box.keyPair.fromSecretKey(arr);
-    }, TypeError);
+    await assert.rejects(nacl.box.keyPair.fromSecretKey(arr), TypeError);
   });
 
   it("throws TypeError for sign with bad types", async function () {

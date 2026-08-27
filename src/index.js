@@ -13,12 +13,9 @@ const gf = function (init) {
 };
 
 const _0 = new Uint8Array(16);
-const _9 = new Uint8Array(32);
-_9[0] = 9;
 
 const gf0 = gf(),
   gf1 = gf([1]),
-  _121665 = gf([0xdb41, 1]),
   D2 = gf([
     0xf159, 0x26b2, 0x9b94, 0xebd6, 0xb156, 0x8283, 0x149a, 0x00e0, 0xd130,
     0xeef3, 0x80f2, 0x198e, 0xfce7, 0x56df, 0xd9dc, 0x2406,
@@ -1090,12 +1087,6 @@ function par25519(a) {
   return d[0] & 1;
 }
 
-function unpack25519(o, n) {
-  let i;
-  for (i = 0; i < 16; i++) o[i] = n[2 * i] + (n[2 * i + 1] << 8);
-  o[15] &= 0x7fff;
-}
-
 function A(o, a, b) {
   for (let i = 0; i < 16; i++) o[i] = a[i] + b[i];
 }
@@ -1582,92 +1573,66 @@ function inv25519(o, i) {
   for (a = 0; a < 16; a++) o[a] = c[a];
 }
 
-function crypto_scalarmult(q, n, p) {
-  const z = new Uint8Array(32);
-  let x = new Float64Array(80),
-    r,
-    i;
-  const a = gf(),
-    b = gf(),
-    c = gf(),
-    d = gf(),
-    e = gf(),
-    f = gf();
-  for (i = 0; i < 31; i++) z[i] = n[i];
-  z[31] = (n[31] & 127) | 64;
-  z[0] &= 248;
-  unpack25519(x, p);
-  for (i = 0; i < 16; i++) {
-    b[i] = x[i];
-    d[i] = a[i] = c[i] = 0;
-  }
-  a[0] = d[0] = 1;
-  for (i = 254; i >= 0; --i) {
-    r = (z[i >>> 3] >>> (i & 7)) & 1;
-    sel25519(a, b, r);
-    sel25519(c, d, r);
-    A(e, a, c);
-    Z(a, a, c);
-    A(c, b, d);
-    Z(b, b, d);
-    S(d, e);
-    S(f, a);
-    M(a, c, a);
-    M(c, b, e);
-    A(e, a, c);
-    Z(a, a, c);
-    S(b, a);
-    Z(c, d, f);
-    M(a, c, _121665);
-    A(a, a, d);
-    M(c, c, a);
-    M(a, d, f);
-    M(d, b, x);
-    S(b, e);
-    sel25519(a, b, r);
-    sel25519(c, d, r);
-  }
-  for (i = 0; i < 16; i++) {
-    x[i + 16] = a[i];
-    x[i + 32] = c[i];
-    x[i + 48] = b[i];
-    x[i + 64] = d[i];
-  }
-  const x32 = x.subarray(32);
-  const x16 = x.subarray(16);
-  inv25519(x32, x32);
-  M(x16, x16, x32);
-  pack25519(q, x16);
-  return 0;
+const X25519_PKCS8_HEADER = new Uint8Array([
+  0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x6e, 0x04,
+  0x22, 0x04, 0x20,
+]);
+
+async function crypto_scalarmult(q, n, p) {
+  const skPkcs8 = new Uint8Array(48);
+  skPkcs8.set(X25519_PKCS8_HEADER, 0);
+  skPkcs8.set(n, 16);
+  const sk = await crypto.subtle.importKey("pkcs8", skPkcs8, "X25519", false, [
+    "deriveBits",
+  ]);
+  const pk = await crypto.subtle.importKey(
+    "raw",
+    p,
+    { name: "X25519" },
+    false,
+    [],
+  );
+  const shared = new Uint8Array(
+    await crypto.subtle.deriveBits({ name: "X25519", public: pk }, sk, 256),
+  );
+  q.set(shared);
 }
 
-function crypto_scalarmult_base(q, n) {
-  return crypto_scalarmult(q, n, _9);
+async function crypto_scalarmult_base(q, n) {
+  const basePoint = new Uint8Array(32);
+  basePoint[0] = 9;
+  return crypto_scalarmult(q, n, basePoint);
 }
 
-function crypto_box_keypair(y, x) {
-  crypto.getRandomValues(x);
-  return crypto_scalarmult_base(y, x);
+async function crypto_box_keypair(y, x) {
+  const kp = await crypto.subtle.generateKey({ name: "X25519" }, true, [
+    "deriveBits",
+  ]);
+  y.set(new Uint8Array(await crypto.subtle.exportKey("raw", kp.publicKey)));
+  const skPkcs8 = new Uint8Array(
+    await crypto.subtle.exportKey("pkcs8", kp.privateKey),
+  );
+  x.set(skPkcs8.slice(-32));
 }
 
-function crypto_box_beforenm(k, y, x) {
+async function crypto_box_beforenm(k, y, x) {
   const s = new Uint8Array(32);
-  crypto_scalarmult(s, x, y);
+  await crypto_scalarmult(s, x, y);
   return crypto_core_hsalsa20(k, _0, s, sigma);
 }
 
 const crypto_box_afternm = crypto_secretbox;
 const crypto_box_open_afternm = crypto_secretbox_open;
 
-function crypto_box(c, m, d, n, y, x) {
+async function crypto_box(c, m, d, n, y, x) {
   const k = new Uint8Array(32);
-  crypto_box_beforenm(k, y, x);
+  await crypto_box_beforenm(k, y, x);
   return crypto_box_afternm(c, m, d, n, k);
 }
 
-function crypto_box_open(m, c, d, n, y, x) {
+async function crypto_box_open(m, c, d, n, y, x) {
   const k = new Uint8Array(32);
-  crypto_box_beforenm(k, y, x);
+  await crypto_box_beforenm(k, y, x);
   return crypto_box_open_afternm(m, c, d, n, k);
 }
 
@@ -1926,61 +1891,75 @@ nacl.secretbox.keyLength = crypto_secretbox_KEYBYTES;
 nacl.secretbox.nonceLength = crypto_secretbox_NONCEBYTES;
 nacl.secretbox.overheadLength = crypto_secretbox_BOXZEROBYTES;
 
-nacl.scalarMult = function (n, p) {
+nacl.scalarMult = async function (n, p) {
   checkArrayTypes(n, p);
   if (n.length !== crypto_scalarmult_SCALARBYTES) throw new Error("bad n size");
   if (p.length !== crypto_scalarmult_BYTES) throw new Error("bad p size");
   const q = new Uint8Array(crypto_scalarmult_BYTES);
-  crypto_scalarmult(q, n, p);
+  await crypto_scalarmult(q, n, p);
   return q;
 };
 
-nacl.scalarMult.base = function (n) {
+nacl.scalarMult.base = async function (n) {
   checkArrayTypes(n);
   if (n.length !== crypto_scalarmult_SCALARBYTES) throw new Error("bad n size");
   const q = new Uint8Array(crypto_scalarmult_BYTES);
-  crypto_scalarmult_base(q, n);
+  await crypto_scalarmult_base(q, n);
   return q;
 };
 
 nacl.scalarMult.scalarLength = crypto_scalarmult_SCALARBYTES;
 nacl.scalarMult.groupElementLength = crypto_scalarmult_BYTES;
 
-nacl.box = function (msg, nonce, publicKey, secretKey) {
-  const k = nacl.box.before(publicKey, secretKey);
+nacl.box = async function (msg, nonce, publicKey, secretKey) {
+  checkArrayTypes(msg, nonce, publicKey, secretKey);
+  checkBoxLengths(publicKey, secretKey);
+  const k = new Uint8Array(crypto_box_BEFORENMBYTES);
+  try {
+    await crypto_box_beforenm(k, publicKey, secretKey);
+  } catch {
+    return null;
+  }
   return nacl.secretbox(msg, nonce, k);
 };
 
-nacl.box.before = function (publicKey, secretKey) {
+nacl.box.before = async function (publicKey, secretKey) {
   checkArrayTypes(publicKey, secretKey);
   checkBoxLengths(publicKey, secretKey);
   const k = new Uint8Array(crypto_box_BEFORENMBYTES);
-  crypto_box_beforenm(k, publicKey, secretKey);
+  await crypto_box_beforenm(k, publicKey, secretKey);
   return k;
 };
 
 nacl.box.after = nacl.secretbox;
 
-nacl.box.open = function (msg, nonce, publicKey, secretKey) {
-  const k = nacl.box.before(publicKey, secretKey);
+nacl.box.open = async function (msg, nonce, publicKey, secretKey) {
+  checkArrayTypes(msg, nonce, publicKey, secretKey);
+  checkBoxLengths(publicKey, secretKey);
+  const k = new Uint8Array(crypto_box_BEFORENMBYTES);
+  try {
+    await crypto_box_beforenm(k, publicKey, secretKey);
+  } catch {
+    return null;
+  }
   return nacl.secretbox.open(msg, nonce, k);
 };
 
 nacl.box.open.after = nacl.secretbox.open;
 
-nacl.box.keyPair = function () {
+nacl.box.keyPair = async function () {
   const pk = new Uint8Array(crypto_box_PUBLICKEYBYTES);
   const sk = new Uint8Array(crypto_box_SECRETKEYBYTES);
-  crypto_box_keypair(pk, sk);
+  await crypto_box_keypair(pk, sk);
   return { publicKey: pk, secretKey: sk };
 };
 
-nacl.box.keyPair.fromSecretKey = function (secretKey) {
+nacl.box.keyPair.fromSecretKey = async function (secretKey) {
   checkArrayTypes(secretKey);
   if (secretKey.length !== crypto_box_SECRETKEYBYTES)
     throw new Error("bad secret key size");
   const pk = new Uint8Array(crypto_box_PUBLICKEYBYTES);
-  crypto_scalarmult_base(pk, secretKey);
+  await crypto_scalarmult_base(pk, secretKey);
   return { publicKey: pk, secretKey: new Uint8Array(secretKey) };
 };
 

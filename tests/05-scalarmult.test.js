@@ -6,7 +6,7 @@ import nacl from "nacl.ts";
 import randomVectors from "./data/scalarmult.random.js";
 
 describe("nacl.scalarMult.base", function () {
-  it("should compute correct base point multiplication", function () {
+  it("should compute correct base point multiplication", async function () {
     const golden = new Uint8Array([
       0x89, 0x16, 0x1f, 0xde, 0x88, 0x7b, 0x2b, 0x53, 0xde, 0x54, 0x9a, 0xf4,
       0x83, 0x94, 0x01, 0x06, 0xec, 0xc1, 0x14, 0xd6, 0x98, 0x2d, 0xaa, 0x98,
@@ -17,29 +17,29 @@ describe("nacl.scalarMult.base", function () {
       0, 0, 0, 0, 0, 0, 0,
     ]);
     for (let i = 0; i < 200; i++) {
-      input = nacl.scalarMult.base(input);
+      input = await nacl.scalarMult.base(input);
     }
     assert.equal(input.toBase64(), golden.toBase64());
   });
 });
 
 describe("nacl.scalarMult and nacl.scalarMult.base random test vectors", function () {
-  it("should match random test vectors", function () {
-    randomVectors.forEach(function (vec) {
+  it("should match random test vectors", async function () {
+    for (const vec of randomVectors) {
       const pk1 = Uint8Array.fromBase64(vec[0]);
       const sk1 = Uint8Array.fromBase64(vec[1]);
       const pk2 = Uint8Array.fromBase64(vec[2]);
       const sk2 = Uint8Array.fromBase64(vec[3]);
       const out = Uint8Array.fromBase64(vec[4]);
 
-      const jpk1 = nacl.scalarMult.base(sk1);
+      const jpk1 = await nacl.scalarMult.base(sk1);
       assert.equal(jpk1.toBase64(), pk1.toBase64());
-      const jpk2 = nacl.scalarMult.base(sk2);
+      const jpk2 = await nacl.scalarMult.base(sk2);
       assert.equal(jpk2.toBase64(), pk2.toBase64());
-      const jout1 = nacl.scalarMult(sk1, pk2);
+      const jout1 = await nacl.scalarMult(sk1, pk2);
       assert.equal(jout1.toBase64(), out.toBase64());
-      const jout2 = nacl.scalarMult(sk2, pk1);
+      const jout2 = await nacl.scalarMult(sk2, pk1);
       assert.equal(jout2.toBase64(), out.toBase64());
-    });
+    }
   });
 });
